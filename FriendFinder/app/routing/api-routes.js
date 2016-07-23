@@ -4,7 +4,7 @@
 
 
 var friendData 		= require('../data/friends.js');
-var path 			= require('path');
+var path 					= require('path');
 
 
 /*function compareScore(){
@@ -25,39 +25,59 @@ module.exports = function(app){
 	});
 
 	app.post('/api/friends', function(req, res){
-		var bestMatch = {
-			name: "",
-			photo: "",
-			scoreDiff: 50
-		};
-
 		var userData = req.body;
-		var userName = userData.name;
-		var userPhoto = userData.photo;
-		var userScores = userData.scores;
+		var bestMatch;
 
-		var totalDiff = 0;
 
-		for (var i=0; i<friendData.length; i++){
-			console.log (friendData[i].name);
+		for (var i = 0; i < userData.scores.length; i++) {
+				if (userData.scores[i] == "1 (Strongly Disagree") {
+					userData.scores[i] = 1;
+				} else if (userData.scores[i] == "5 (Strongly Agree") {userData.scores[i] = 5;
 
-			for (var j=0; j<friendData[i].scores[j]; j++){
+				} else {userData.scores[i] = parseInt(userData.scores[i]);
+				}
+		}
 
-				totalDiff += Math.abs(userScores[j]- friendData[i].scores[j]);
+		var scoreDiff = [];
 
-				if (totalDiff <= bestMatch.scoreDiff){
+		for(var i = 0; i < friendData.length; i++) {
 
-					bestMatch.name = friendData[i].name;
-					bestMatch.image = friendData[i].image;
-					bestMatch.scoreDiff = totalDiff;
-        }
+			var compareFriend = friendData[i];
+			var totalDiff = 0;
+
+			for(var j = 0; j < compareFriend.scores.length; j++) {
+				var differenceOneScore = Math.abs(compareFriend.scores[j] - userData.scores[j]);
+				totalDiff += differenceOneScore;
 			}
+
+			scoreDiff[i] = totalDiff;
+		}
+
+		var bestMatch = scoreDiff[0];
+		var bestMatchVal = 0;
+
+		for(var i = 1; i < scoreDiff.length; i++) {
+			if(scoreDiff[i] < bestMatch) {
+				bestMatch = scoreDiff[i];
+				bestMatchVal = i;
+			}
+		}
+
+				//currDiff += Math.abs(item.scores[i] - req.body.scores[i]);
+
+		//	if (currDiff <= scoreDiff){
+			//	scoreDiff = currDiff;
+				//bestMatch = item;
+        //}
+			//var currDiff = 0;
+		console.log(bestMatch);
+		friendData.push(userData);
+		res.json(friendData[bestMatchVal]);
+		})
 }
 
 
-		console.log(bestMatch);
-		friendData.push(userData);
-		res.json(bestMatch);
+
 		//compareScore();
 		/* friendData.forEach(function(item) {
 				var currDiff = 0;
@@ -70,15 +90,13 @@ module.exports = function(app){
 				}
 			}) */
 		 // KEY LINE
-	});
 
 	// ---------------------------------------------------------------------------
 	// I added this below code so you could clear out the table while working with the functionality.
 	// Don't worry about it!
 
-	app.post('/api/clear', function(req, res){
+	/* app.post('/api/clear', function(req, res){
 		// Empty out the arrays of data
 		friendData = [];
 		console.log(friendData);
-	})
-}
+	}) */

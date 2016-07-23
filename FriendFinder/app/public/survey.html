@@ -158,9 +158,10 @@
 		          <option>4</option>
 		          <option>5(Strongly Agree)</option>
 		        </select>
+		        <hr>
 		        <br>
 
-						<button type="submit" class="btn btn-primary submit">Submit</button>
+						<button type="submit" id="submit" class="btn btn-primary submit">Submit</button>
 						<br>
 					</div>
 				</div>
@@ -177,9 +178,8 @@
 	</div>
 
 	<!-- MODAL -->
-	<div id="ffindModal" role="dialog">
+	<div id="ffindModal" class="modal" role="dialog">
 		<div class="modal-dialog">
-
 			<div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -190,7 +190,7 @@
 	        <img id="matchImg" src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg" alt=""></img>
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" id="close" class="btn btn-default" data-dismiss="modal">Close</button>
       	</div>
     	</div>
 		</div>
@@ -223,8 +223,8 @@
 			  $('.chosen-select').each(function() {
 
 			  	if( $(this).val() === "")
-			  		isValid = false
-			  })
+			  		isValid = false;
+			  });
 			  return isValid;
 			}
 
@@ -232,34 +232,35 @@
 				if (validateForm() == true)
 				{
 			// Create an object for the user's data
-	    	var userData = {
-	    		name: $("#user_name").val(),
-	    		photo: $("#user_photo").val(),
-	    		scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val(), ]
-	    	}
+		    	var userData = {
+		    		name: $("#user_name").val().trim(),
+		    		photo: $("#user_photo").val().trim(),
+		    		scores: [$("#q1").val(), $("#q2").val(), $("#q3").val(), $("#q4").val(), $("#q5").val(), $("#q6").val(), $("#q7").val(), $("#q8").val(), $("#q9").val(), $("#q10").val(), ]
+		    	}
 
 
-	    	// Grab the URL of the website
-	    	var currentURL = window.location.origin;
+		    	// Grab the URL of the website
+		    	var currentURL = window.location.origin;
 
 	    	// AJAX post the data to the friends API.
-	    	$.post(currentURL + "/api/friends", userData, function(data){
+		    	$.post(currentURL + "/api/friends", userData, function(data){
 
-	    		// Grab the result from the AJAX post so that the best match's name and photo are displayed.
-	    		$("#matchName").text(data.name);
-	    		$("#matchImg").attr("src", data.photo);
+		    		// Grab the result from the AJAX post so that the best match's name and photo are displayed.
+		    		$("#matchName").text(data.name);
+		    		$("#matchImg").attr("src", data.photo);
 
-		    	// Show the modal with the best match
-		    	$("#ffindModal").modal("toggle");
-
-	    	});
+			    	// Show the modal with the best match
+			    	$("#ffindModal").modal('toggle');
+	    		});
+	    		$("#user_name").val("");
+	    		$("#user_photo").val("");
 				}
 				else
 				{
 					alert("Please fill out all fields before submitting!");
 				}
 
-    	return false;
+    			return false;
     });
   </script>
 </body>
